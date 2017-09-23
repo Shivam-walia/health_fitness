@@ -1,0 +1,42 @@
+<html>
+	<head>
+		<title>
+			login</title>
+
+
+
+
+
+
+	</head>
+	<body>
+		<center>
+			<div class="container" style="background-color:e0f2f1;">
+			<h1 style= "color:teal;">welcome to Health and fittness</h1>
+		</div>
+	</center>
+		<div class="container" style="background-color:#e0f2f1;">
+			<center><h1 style ="color:teal;">Signup for new account<h1>
+						<form method="POST">
+							{% csrf_token %}
+						<p style="color:teal; font-size:20px">	Name</p>
+						<input type ="text" name="username" value="{{username}}" style="background-color:teal;" ><br>
+						<p style="color:teal; font-size:20px">Password</p>
+						<input type="password" name="password" value="{{password}}" style="background-color:teal;"><br>
+						<p style="color:teal; font-size:20px">	Email</p>
+						<input type="email" name="email"  value="{{email}}"style="background-color:teal;"><br>
+						<p style="color:teal; font-size:20px">	Contact</p>
+						<input type="text" name="text"  value="{{contact}}"style="background-color:teal;"><br>
+						     <input type="submit" name="submit" style="background-color:orange;"><br>
+			</center>
+						</form>
+		</div>
+
+	</body>
+
+
+
+
+
+
+</html>

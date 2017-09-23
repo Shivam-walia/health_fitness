@@ -1,0 +1,97 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
+from django.shortcuts import render,redirect
+from myapp.forms import signupform,loginform
+from django.contrib.auth.hashers import make_password,check_password
+from myapp.models import usermodel,sessiontoken
+from healthkart.settings import *
+from django.http import HttpResponse
+from django.core.mail import send_mail
+from django.contrib.auth.decorators import login_required
+#import os
+
+# Create your views here.
+def signup_view(request):
+	#logic
+	if request.method=='GET':
+		form=signupform()
+		name1=''
+	#	template_name='signup.html'
+	elif request.method=='POST':
+		form=signupform(request.POST)
+		if form.is_valid():
+			username=form.cleaned_data['username']
+			email=form.cleaned_data['email']
+			contact=form.cleaned_data['contact']
+			password=form.cleaned_data['password']
+			
+			#insert data to database
+		#	if username==None or len(username)<5 or len(password)<6:
+
+#				name1="Please enter the correct credentials or password Too short"
+		#	else:
+	#		name1=""
+			new_user=usermodel(username=username,password=make_password(password),email=email,contact=contact)
+			new_user.save()
+		#		Subject='Welcome To Health Fitness' 
+		#		message='Thanks For connecting with us we ar happy to have you here ... continue visiting for Exiting offers and with our new platform upload our most liked product by you and get vouchers '
+		#		from_email=EMAIL_HOST_USER
+		#		to_email=[new_user.email]
+		#		send_mail(subject,message,from_email,to_email)
+			return redirect("/login/")
+	#	else:
+	#		name1="Entered details are incorrect please Enter again and happy login...!" 	
+	#		return redirect("/signup/")
+	return render(request,'signup.html',{'form':signupform})
+
+def login_view(request):
+    response_data={}
+    if request.method == 'GET':
+        #to do: display login form
+         form = loginform()
+    elif request.method == 'POST':
+        #to do: process form data
+        form = loginform(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            #check user exist in db or not
+            user = usermodel.objects.filter(username=username).first()
+            if user:
+                #compare password
+                if check_password(password, user.password):
+                    #login successful
+                    new_token = sessiontoken(user=user)
+                    new_token.create_token()
+                    new_token.save()
+                    response = redirect('/home/')
+                    response.set_cookie(key='session_token', value=new_token.session_token)
+                    return response
+                else:
+                    #password incorrect.
+                    HttpResponse("wrong password entered")
+                    response_data['message'] = 'Incorrect Password! Please try again!'
+            else:
+                HttpResponse("form data is not valid")
+    
+    response_data['form'] = form
+    return render(request,'login.html', response_data)
+
+
+def check_validation(request):
+	if request.cookies.get('session_token'):
+
+		session=sessiontoken.objects.filter(session_token=request.COOKIES.get('session_token')).first()
+		if session:
+
+			return session.user
+		else:
+
+			return None
+def home_view(request):
+
+	return render(request,'home1.html')
+
+def home(request):
+	return render(request,'core/newhome.html')
